@@ -1,0 +1,88 @@
+/* Create table 1 */
+create table employees1(
+	emp_no VARCHAR(6),
+	birth_date VARCHAR(10),
+	first_name VARCHAR(20),
+	last_name VARCHAR(20),
+	gender VARCHAR(2),
+	hire_date VARCHAR(10),
+	PRIMARY KEY(emp_no)
+	
+);
+/*Create table 2*/
+create table title1(
+	emp_no VARCHAR(6),
+	title VARCHAR(20),
+	start_date VARCHAR(10),
+	end_date VARCHAR(10)
+	
+);
+
+/*Join and create table*/
+Select  ti.emp_no,
+	ti.title, 
+	ti.start_date, 
+	ti.end_date,
+	de.first_name,
+	de.last_name
+	
+into retirement_titles_real
+from title1 as ti 
+left join employees1 as de
+on de.emp_no = ti.emp_no
+WHERE birth_date BETWEEN '1952-01-01' AND '1955-12-31';
+/*starter code*/
+-- Use Dictinct with Orderby to remove duplicate rows
+SELECT DISTINCT ON (emp_no) emp_no,
+first_name,
+last_name,
+title
+
+INTO unique_titles_real
+FROM retirement_titles_real
+WHERE end_date < '9999-01-01'
+ORDER BY emp_no, end_date DESC;
+
+Select Count(unique_titles_real.first_name), unique_titles_real.title
+into retiring_titles_real
+from unique_titles_real
+group by unique_titles_real.title
+order by unique_titles_real.title
+
+select * from title1
+/*works here*/
+/* PART 2*/
+Create table departments_employee(
+	emp_no VARCHAR(20),
+	dept_no VARCHAR(10),
+	from_date VARCHAR(10),
+	to_date VARCHAR(10)
+);
+/* creating table*/
+Select dd.from_date,
+	dd.to_date,
+	ep.emp_no,
+	ep.first_name,
+	ep.last_name,
+	ep.birth_date,
+	ti.title
+into employee_data
+from employees1 as ep
+left join title1 as ti
+on ep.emp_no = ti.emp_no
+left join departments_employee as dd
+on dd.emp_no = ep.emp_no;
+select * from  employee_first
+/*creating mentorship_eligibilty*/
+Select Distinct on (emp_no) emp_no,
+	first_name,
+	last_name,
+	birth_date,
+	from_date,
+	to_date,
+	title
+into employee_first
+from employee_data
+where to_date = '9999-01-01' and 
+birth_date Between '1965-01-01' and '1965-12-31'
+Order by emp_no;
